@@ -16,7 +16,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-const mongoDB = "mongodb://localhost:27017/templatedemo";
+const mongoDB = "mongodb://localhost:27017/testdb";
 mongoose.connect(mongoDB);
 mongoose.Promise = Promise;
 const db = mongoose.connection;
