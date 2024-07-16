@@ -16,6 +16,10 @@ router.get('/list', validateToken, (req, res, next) => {
   res.send("Users not found.");
 });
 
+router.post('/login', function(req, res, next) {
+  res.send('test');
+});
+
 router.post('/register', 
   body("email").isLength({min: 3}).trim().escape(),
   body("password").isLength({min: 5}),
@@ -31,18 +35,15 @@ router.post('/register',
         return res.status(403).json({ email: "Email already in use."})
       }
       
-      bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(req.body.password, salt, (err, hash) => {
-          if(err) throw err;
-          User.create({
-            email: req.body.email,
-            password: hash
-          }, (err, ok) => {
-            if(err) throw err;
-            return res.redirect("/users/login");
-          });
-        });
+      const salt = await bcrypt.genSalt(10);
+      const hash = await bcrypt.hash(req.body.password, salt);
+
+      await User.create({
+        email: req.body.email,
+        password: hash
       });
+          
+      return res.redirect("/users/login");
     }
     catch (err) {
       console.log(err);
