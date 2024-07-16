@@ -32,7 +32,7 @@ router.post('/register',
     try {
       const user = await User.findOne({email: req.body.email});
       if (user) {
-        return res.status(403).json({ email: "Email already in use."})
+        return res.status(403).json({ email: "Email already in use."});
       }
       
       const salt = await bcrypt.genSalt(10);
@@ -42,8 +42,9 @@ router.post('/register',
         email: req.body.email,
         password: hash
       });
-          
-      return res.redirect("/users/login");
+        
+      return res.json({ message: "Ok"});
+      //return res.redirect("/users/login");
     }
     catch (err) {
       console.log(err);
