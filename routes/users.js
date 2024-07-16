@@ -11,11 +11,7 @@ router.get('/private', validateToken, (req, res, next) => {
   res.json({ email: req.user.email });
 });
 
-router.post('/user/login', 
-  body("email").trim().escape(),
-  body("password").escape(),
-  async (req, res, next) => {
-
+router.post('/user/login',  async (req, res, next) => {
     try {
       const user = await User.findOne({email: req.body.email});
       if (!user) {
@@ -28,7 +24,6 @@ router.post('/user/login',
         if(err) throw err;
         if(isMatch) {
           const jwtPayload = {
-            id: user._id,
             email: user.email
           }
           jwt.sign(
@@ -51,8 +46,6 @@ router.post('/user/login',
 });
 
 router.post('/user/register', 
-  body("email").isLength({min: 3}).trim().escape(),
-  body("password").isLength({min: 5}),
   async (req, res, next) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
