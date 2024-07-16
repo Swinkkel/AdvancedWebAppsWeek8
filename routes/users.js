@@ -4,12 +4,38 @@ const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const {body, validationResult } = require("express-validator");
 const User = require("../models/User");
+const Todo = require("../models/Todo");
 const jwt = require("jsonwebtoken");
 const validateToken = require("../auth/validateToken.js")
 
 router.get('/private', validateToken, (req, res, next) => {
   res.json({ email: req.user.email });
 });
+
+router.post('/todos', validateToken, async (req, res, next) => {
+    const { items } = req.body;
+    if (!items || !Array.isArray(items) || !items.length) {
+      return res.status(400).json({ error: 'Invalid items format' });
+    }
+
+    try {
+      let todo = await Todo.findOne({ user: req.user.id });
+      if (!todo) {
+        todo = new Todo({
+          user: req.user.id,
+          items
+        });
+      } else {
+        todo.items = [...todo.items, ...items];
+      }
+
+      await todo.save();
+      res.status(201).json(todo);
+    } catch (err) {
+      res.status(500).json({ error: 'Server error' });
+    }
+  }
+);
 
 router.post('/user/login',  async (req, res, next) => {
     try {
