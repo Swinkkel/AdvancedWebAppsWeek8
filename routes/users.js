@@ -46,6 +46,15 @@ router.post('/user/login',  async (req, res, next) => {
 });
 
 router.post('/user/register', 
+  // Email must be in valid format
+  body('email').isEmail().withMessage('Please enter a valid email').normalizeEmail(),
+  // Password must be at least 8 characters long, include one lowercase letter, one uppercase letter, one number, and one special character
+  body('password')
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
+    .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter')
+    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
+    .matches(/[0-9]/).withMessage('Password must contain at least one number')
+    .matches(/[\W_]/).withMessage('Password must contain at least one special character'),  
   async (req, res, next) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
