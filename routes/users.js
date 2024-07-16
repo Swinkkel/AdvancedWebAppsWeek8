@@ -26,7 +26,7 @@ router.post('/register',
     }
 
     try {
-      const user = await user.findOne({email: req.body.email});
+      const user = await User.findOne({email: req.body.email});
       if (user) {
         return res.status(403).json({ email: "Email already in use."})
       }
